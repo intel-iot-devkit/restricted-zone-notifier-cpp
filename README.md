@@ -104,6 +104,8 @@ To run the application with the needed models using the webcam:
 
 This application can take advantage of the hardware acceleration in the OpenVINO toolkit by using the `-b` and `-t` parameters.
 
+**NOTE:** You will be prompted to select an area when the camera capture start: drage a mouse from left top corner to cover an area on the plane and once done (a blue recatngle is drawn) present `ENTER` or `SPACE` to proceed with monitoring.
+
 For example, to use the OpenVINO™ toolkit backend with the GPU in 32-bit mode:
 ```
     ./monitor -m=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/person-detection-retail-0013/FP32/person-detection-retail-0013.bin -c=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/person-detection-retail-0013/FP32/person-detection-retail-0013.xml -b=2 -t=1
