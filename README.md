@@ -1,4 +1,4 @@
-# Machine Safety Monitor
+# Factory Virtual Fence
 
 | Details            |              |
 |-----------------------|---------------|
@@ -10,9 +10,9 @@
 
 ## Introduction
 
-This assembly line virtual fence application is one of a series of reference implementations for Computer Vision (CV) using the OpenVINO™ toolkit. This application is designed for a machine mounted camera system that monitors if there are any humans present in a predefined selected assembly line area. It sends an alert if there is at least one person detected in the area.
+This factory virtual fence application is one of a series of reference implementations for Computer Vision (CV) using the OpenVINO™ toolkit. This application is designed for a machine mounted camera system that monitors if there are any humans present in a predefined selected assembly line area. It sends an alert if there is at least one person detected in the area.
 
-This example is intended to demonstrate how to ensure the assembly line huamn safety.
+This example is intended to demonstrate how to use CV to improve assembly line safety for human operators and workers.
 
 ## Requirements
 
@@ -38,7 +38,7 @@ instructions below. It is not mandatory for CPU inference.
 
 ## How it works
 
-The application uses a video source, such as a camera, to grab frames, and then uses a Deep Neural Network (DNNs) to process the data. The network detects persons in the frame, and then if successful it checks if the detected persons are in a selected assembly line region.
+The application uses a video source, such as a camera, to grab frames, and then uses a Deep Neural Network (DNNs) to process the data. The network detects persons in the frame, and then if successful it checks if the detected persons are in the indicated off-limits assembly line region.
 
 The data can then optionally be sent to a MQTT machine to machine messaging server, as part of a industrial data analytics system.
 
@@ -67,7 +67,7 @@ You must configure the environment to use the OpenVINO™ toolkit one time per s
 
 Start by changing the current directory to wherever you have git cloned the application code. For example:
 ```
-    cd machine-safety-monitor
+    cd factory-virtual-fence-cpp
 ```
 
 If you do not yet have a `build` directory create one:
@@ -118,7 +118,7 @@ To run the code using 16-bit floats, you have to both set the `-t` flag to use t
 
 ## Sample videos
 
-There are several videos available to use as sample videos to show the capabilities of this application. You can download them by running these commands from the `shopper-gaze-monitor` directory:
+There are several videos available to use as sample videos to show the capabilities of this application. You can download them by running these commands from the `factory-virtual-fence-cpp` directory:
 ```
     mkdir resources
     cd resources
@@ -127,7 +127,7 @@ There are several videos available to use as sample videos to show the capabilit
     cd ..
 ```
 
-To then execute the code using one of these sample videos, run the following commands from the `shopper-gaze-monitor` directory:
+To then execute the code using one of these sample videos, run the following commands from the `factory-virtual-fence-cpp` directory:
 ```
     cd build
     ./monitor -m=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/person-detection-retail-0013/FP32/person-detection-retail-0013.bin -c=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/person-detection-retail-0013/FP32/person-detection-retail-0013.xml -i=../resources/face-demographics-walking-and-pause.mp4
@@ -145,5 +145,5 @@ Change the `MQTT_SERVER` to a value that matches the MQTT server you are connect
 
 You should change the `MQTT_CLIENT_ID` to a unique value for each monitoring station, so you can track the data for individual locations. For example:
 ```
-    export MQTT_CLIENT_ID=shelf1337
+    export MQTT_CLIENT_ID=factory1337
 ```
