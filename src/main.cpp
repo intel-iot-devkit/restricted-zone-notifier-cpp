@@ -230,7 +230,7 @@ void frameRunner() {
             // get detected persons
             vector<Rect> persons;
             // assembly line area flags
-            bool safe = false;
+            bool safe = true;
             bool alert = false;
 
             float* data = (float*)result.data;
@@ -259,10 +259,9 @@ void frameRunner() {
 
                 // If the person is not within monitored assembly area theyre safe
                 // Otherwise we need to trigger an alert
-                if ((r & area) != r) {
-                    safe = true;
-                } else {
+                if ((r & area) == r) {
                     alert = true;
+                    safe = false;
                 }
             }
 
