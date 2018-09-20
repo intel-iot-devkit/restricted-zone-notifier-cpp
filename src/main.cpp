@@ -61,7 +61,8 @@ int targetId;
 int rate;
 
 // applicationd related flags
-std::vector<String> names{"cls_prob_reshape", "proposal", "bbox_pred_reshape"};
+//std::vector<String> names{"cls_prob_reshape", "proposal", "bbox_pred_reshape"};
+std::vector<String> names{"cls_prob_reshape", "bbox_pred_reshape"};
 std::vector<Mat> outs;
 bool im_info_init = false;
 const string selector = "Assembly Selection";
@@ -222,38 +223,48 @@ void frameRunner() {
         Mat next = nextImageAvailable();
         if (!next.empty()) {
             // convert to 4d vector as required by face detection model, and detect faces
-            blobFromImage(next, blob, 1.0, Size(544, 992));
-            net.setInput(blob, "data");
-            net.setInput(im_info, "im_info");
-            net.forward(outs, names);
+            blobFromImage(next, blob, 1.0, Size(672, 384));
+            net.setInput(blob);
+            Mat result = net.forward();
 
             // get detected persons
             vector<Rect> persons;
             // assembly line area flags
-            bool safe = true;
+            bool safe = false;
             bool alert = false;
 
-            cout << "TOTAL: " << outs.size() << endl;
+            float* data = (float*)result.data;
+            for (size_t i = 0; i < result.total(); i += 7)
+            {
+                float confidence = data[i + 2];
+                if (confidence > 0.5)
+                {
+                    int left = (int)(data[i + 3] * frame.cols);
+                    int top = (int)(data[i + 4] * frame.rows);
+                    int right = (int)(data[i + 5] * frame.cols);
+                    int bottom = (int)(data[i + 6] * frame.rows);
+                    int width = right - left + 1;
+                    int height = bottom - top + 1;
 
-            // TODO: find box rectangle for detected persons
-            // persons.push_back(Rect(left, top, width, height));
+                    persons.push_back(Rect(left, top, width, height));
+                }
+            }
 
-            //// detect if there are any people in marked area
-            //for(auto const& r: persons) {
-            //    cout << "PERSON DETECTED" << endl;
-            //    // make sure the person rect is completely inside the main Mat
-            //    if ((r & Rect(0, 0, next.cols, next.rows)) != r) {
-            //        continue;
-            //    }
+            // detect if there are any people in marked area
+            for(auto const& r: persons) {
+                // make sure the person rect is completely inside the main Mat
+                if ((r & Rect(0, 0, next.cols, next.rows)) != r) {
+                    continue;
+                }
 
-            //    // If the person is not within monitored assembly area theyre safe
-            //    // Otherwise we need to trigger an alert
-            //    if ((r & area) != r) {
-            //        safe = true;
-            //    } else {
-            //        alert = true;
-            //    }
-            //}
+                // If the person is not within monitored assembly area theyre safe
+                // Otherwise we need to trigger an alert
+                if ((r & area) != r) {
+                    safe = true;
+                } else {
+                    alert = true;
+                }
+            }
 
             // operator data
             AssemblyInfo info;
@@ -360,15 +371,6 @@ int main(int argc, char** argv)
             break;
         }
 
-        // initialize im_info once; we avoid doing this for every frame
-        if (!im_info_init) {
-            float width = static_cast<float>(frame.cols);
-            float height = static_cast<float>(frame.rows);
-            float data[6] = {544, 992,  992/width, 544/height, 992/width, 544/height};
-            im_info = Mat(1, 6, CV_32F, data);
-            im_info_init = true;
-        }
-
         // if negative number given, we will default to the start of the frame
         if (area.x < 0 || area.y < 0) {
             area.x = 0;
@@ -392,19 +394,17 @@ int main(int argc, char** argv)
             cout << "Assembly Area: " << area << endl;
         }
 
+        // draw area rectangle
         rectangle(frame, area, CV_RGB(255,0,0));
-        //area_label = format("Area point: [%d, %d] Area size: [%d, %d]", area.x, area.y, area.width, area.height);
-        //putText(frame, area_label, Point(0, 40), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(0, 0, 255), 2);
 
         addImage(frame);
 
         string label = getCurrentPerf();
-        putText(frame, label, Point(0, 15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 0));
+        putText(frame, label, Point(0, 15), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(0, 0, 255));
 
         AssemblyInfo info = getCurrentInfo();
         label = format("Worker Safe: %s", info.safe ? "true" : "false");
-        //putText(frame, label, Point(area.x, area.y+40), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 0));
-        putText(frame, label, Point(0, 40), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 0));
+        putText(frame, label, Point(0, 40), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(0, 255, 0));
 
         if (info.alert) {
             string warning;
@@ -424,6 +424,7 @@ int main(int argc, char** argv)
     // wait for the threads to finish
     t1.join();
     t2.join();
+    cap.release();
 
     // disconnect MQTT messaging
     mqtt_disconnect();
