@@ -48,7 +48,7 @@ using namespace cv;
 using namespace dnn;
 
 // OpenCV-related variables
-Mat frame, blob;
+Mat frame, blob, im_info;
 VideoCapture cap;
 int delay = 5;
 Net net;
@@ -61,7 +61,10 @@ int targetId;
 int rate;
 
 // applicationd related flags
-bool selected = false;
+//std::vector<String> names{"cls_prob_reshape", "proposal", "bbox_pred_reshape"};
+std::vector<String> names{"cls_prob_reshape", "bbox_pred_reshape"};
+std::vector<Mat> outs;
+bool im_info_init = false;
 const string selector = "Assembly Selection";
 // selected assembly line area
 Rect area;
@@ -75,7 +78,6 @@ static volatile sig_atomic_t sig_caught = 0;
 // mqtt parameters
 const string topic = "machine/fence";
 
-// TODO: count number of people nearby assembly line
 // AssemblyInfo contains information about assembly line
 struct AssemblyInfo
 {
@@ -85,7 +87,7 @@ struct AssemblyInfo
 
 // currentInfo contains the latest AssemblyInfo tracked by the application.
 AssemblyInfo currentInfo = {
-  false,
+  true,
   false,
 };
 
@@ -101,17 +103,21 @@ const char* keys =
     "{ input i     | | Path to input image or video file. Skip this argument to capture frames from a camera. }"
     "{ model m     | | Path to .bin file of model containing face recognizer. }"
     "{ config c    | | Path to .xml file of model containing network configuration. }"
-    "{ backend b    | 0 | Choose one of computation backends: "
+    "{ backend b   | 0 | Choose one of computation backends: "
                         "0: automatically (by default), "
                         "1: Halide language (http://halide-lang.org/), "
                         "2: Intel's Deep Learning Inference Engine (https://software.intel.com/openvino-toolkit), "
                         "3: OpenCV implementation }"
-    "{ target t     | 0 | Choose one of target computation devices: "
+    "{ target t    | 0 | Choose one of target computation devices: "
                         "0: CPU target (by default), "
                         "1: OpenCL, "
                         "2: OpenCL fp16 (half-float precision), "
                         "3: VPU }"
-    "{ rate r      | 1 | number of seconds between data updates to MQTT server. }";
+    "{ rate r      | 1 | number of seconds between data updates to MQTT server. }"
+    "{ pointx x    | 0 | X coordinate of the top left point of assembly area on camera feed. }"
+    "{ pointy y    | 0 | Y coordinate of the top left point of assembly area on camera feed. }"
+    "{ width w     | 0 | Width of the assembly area in pixels. }"
+    "{ height h    | 0 | Height of the assembly area in pixels. }";
 
 
 // nextImageAvailable returns the next image from the queue in a thread-safe way
@@ -217,7 +223,7 @@ void frameRunner() {
         Mat next = nextImageAvailable();
         if (!next.empty()) {
             // convert to 4d vector as required by face detection model, and detect faces
-            blobFromImage(next, blob, 1.0, Size(320, 544));
+            blobFromImage(next, blob, 1.0, Size(672, 384));
             net.setInput(blob);
             Mat result = net.forward();
 
@@ -312,6 +318,11 @@ int main(int argc, char** argv)
     targetId = parser.get<int>("target");
     rate = parser.get<int>("rate");
 
+    area.x = parser.get<int>("pointx");
+    area.y = parser.get<int>("pointy");
+    area.width = parser.get<int>("width");
+    area.height = parser.get<int>("height");
+
     // connect MQTT messaging
     int result = mqtt_start(handleMQTTControlMessages);
     if (result == 0) {
@@ -360,32 +371,50 @@ int main(int argc, char** argv)
             break;
         }
 
-        // on start select assembly area
-        if (!selected) {
+        // if negative number given, we will default to the start of the frame
+        if (area.x < 0 || area.y < 0) {
+            area.x = 0;
+            area.y = 0;
+        }
+
+        // if either default values are given or negative we will default to the whole frame
+        if (area.width <= 0) {
+            area.width = frame.cols;
+        }
+
+        if (area.height <= 0) {
+            area.height = frame.rows;
+        }
+
+        // ESC key pressed
+        if ((char)waitKey(delay) == 27) {
+            // Give operator chance to change the area
             // select rectangle from left upper corner, dont display crosshair
             area = selectROI(selector, frame, true, false);
             cout << "Assembly Area: " << area << endl;
-            selected = true;
         }
+
+        // draw area rectangle
+        rectangle(frame, area, CV_RGB(255,0,0));
 
         addImage(frame);
 
         string label = getCurrentPerf();
-        putText(frame, label, Point(0, 15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 0));
+        putText(frame, label, Point(0, 15), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(0, 0, 255));
 
         AssemblyInfo info = getCurrentInfo();
-        label = format("Safe: %d", info.safe);
-        putText(frame, label, Point(0, 40), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 0));
+        label = format("Worker Safe: %s", info.safe ? "true" : "false");
+        putText(frame, label, Point(0, 40), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(0, 255, 0));
 
         if (info.alert) {
             string warning;
-            warning = format("Human In Danger Area: PAUSE MACHINE!");
-            putText(frame, warning, Point(0, 80), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 2);
+            warning = format("HUMAN IN ASSEMBLY AREA: PAUSE THE MACHINE!");
+            putText(frame, warning, Point(0, 120), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 2);
         }
 
         imshow("Factory Virtual Fence", frame);
 
-        if (waitKey(delay) >= 0 || sig_caught) {
+        if (sig_caught) {
             cout << "Attempting to stop background threads" << endl;
             keepRunning = false;
             break;
@@ -395,6 +424,7 @@ int main(int argc, char** argv)
     // wait for the threads to finish
     t1.join();
     t2.join();
+    cap.release();
 
     // disconnect MQTT messaging
     mqtt_disconnect();
