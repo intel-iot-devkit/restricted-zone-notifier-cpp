@@ -389,8 +389,10 @@ int main(int argc, char** argv)
         if ((char)waitKey(delay) == 27) {
             // Give operator chance to change the area
             // select rectangle from left upper corner, dont display crosshair
+            namedWindow(selector);
             area = selectROI(selector, frame, true, false);
-            cout << "Assembly Area: " << area << endl;
+            cout << "Assembly Area Selection: " << area << endl;
+            destroyWindow(selector);
         }
 
         // draw area rectangle
