@@ -10,9 +10,9 @@
 
 ## Introduction
 
-This factory virtual fence application is one of a series of reference implementations for Computer Vision (CV) using the OpenVINO™ toolkit. This application is designed for a machine mounted camera system that monitors if there are any humans present in a predefined selected assembly line area. It sends an alert if there is at least one person detected in the area.
+This factory virtual fence application is one of a series of reference implementations for Computer Vision (CV) using the OpenVINO™ toolkit. This application is designed for a machine mounted camera system that monitors if there are any humans present in a predefined selected assembly line area. It sends an alert if there is at least one person detected in the marked assembly area. The user can select the area coordinates either via command line parameters or once the application has been started they can select the region of interest (ROI) by pressing `ESC` key; this will pause the application, pop up a separate window on which the user can drag the mouse from the upper left ROI corner to whatever the size they require the are to cover. By default the whole frame is selected.
 
-This example is intended to demonstrate how to use CV to improve assembly line safety for human operators and workers.
+This example is intended to demonstrate how to use CV to improve assembly line safety for human operators and factory workers.
 
 ## Requirements
 

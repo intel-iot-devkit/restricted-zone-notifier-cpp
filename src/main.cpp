@@ -61,10 +61,6 @@ int targetId;
 int rate;
 
 // applicationd related flags
-//std::vector<String> names{"cls_prob_reshape", "proposal", "bbox_pred_reshape"};
-std::vector<String> names{"cls_prob_reshape", "bbox_pred_reshape"};
-std::vector<Mat> outs;
-bool im_info_init = false;
 const string selector = "Assembly Selection";
 // selected assembly line area
 Rect area;
