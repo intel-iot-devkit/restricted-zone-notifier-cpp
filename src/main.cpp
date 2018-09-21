@@ -94,7 +94,7 @@ String currentPerf;
 mutex m, m1, m2;
 
 const char* keys =
-    "{ help  h     | | Print help message. }"
+    "{ help     | | Print help message. }"
     "{ device d    | 0 | camera device number. }"
     "{ input i     | | Path to input image or video file. Skip this argument to capture frames from a camera. }"
     "{ model m     | | Path to .bin file of model containing face recognizer. }"
