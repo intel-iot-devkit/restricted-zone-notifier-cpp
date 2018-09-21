@@ -1,4 +1,4 @@
-# Factory Virtual Fence
+# Restricted Zone Notifier
 
 | Details            |              |
 |-----------------------|---------------|
@@ -10,7 +10,7 @@
 
 ## Introduction
 
-This factory virtual fence application is one of a series of reference implementations for Computer Vision (CV) using the OpenVINO™ toolkit. This application is designed for a machine mounted camera system that monitors if there are any humans present in a predefined selected assembly line area. It sends an alert if there is at least one person detected in the marked assembly area. The user can select the area coordinates either via command line parameters or once the application has been started they can select the region of interest (ROI) by pressing `ESC` key; this will pause the application, pop up a separate window on which the user can drag the mouse from the upper left ROI corner to whatever the size they require the are to cover. By default the whole frame is selected.
+This restricted zone notifier application is one of a series of reference implementations for Computer Vision (CV) using the OpenVINO™ toolkit. This application is designed for a machine mounted camera system that monitors if there are any humans present in a predefined selected assembly line area. It sends an alert if there is at least one person detected in the marked assembly area. The user can select the area coordinates either via command line parameters or once the application has been started they can select the region of interest (ROI) by pressing `ESC` key; this will pause the application, pop up a separate window on which the user can drag the mouse from the upper left ROI corner to whatever the size they require the are to cover. By default the whole frame is selected.
 
 This example is intended to demonstrate how to use CV to improve assembly line safety for human operators and factory workers.
 
@@ -42,9 +42,9 @@ The application uses a video source, such as a camera, to grab frames, and then 
 
 The data can then optionally be sent to a MQTT machine to machine messaging server, as part of a industrial data analytics system.
 
-The DNN models used in this application are Intel® optimized models that are part of the OpenVINO™ toolkit.
+The DNN model used in this application is an Intel® optimized models that is part of the OpenVINO™ toolkit.
 
-You can find them here:
+You can find it here:
 
 - `/opt/intel/computer_vision_sdk/deployment_tools/intel_models/pedestrian-detection-adas-0002`
 
@@ -67,7 +67,7 @@ You must configure the environment to use the OpenVINO™ toolkit one time per s
 
 Start by changing the current directory to wherever you have git cloned the application code. For example:
 ```
-    cd factory-virtual-fence-cpp
+    cd restricted-zone-notifier-cpp
 ```
 
 If you do not yet have a `build` directory create one:
@@ -118,7 +118,7 @@ To run the code using 16-bit floats, you have to both set the `-t` flag to use t
 
 ## Sample videos
 
-There are several videos available to use as sample videos to show the capabilities of this application. You can download them by running these commands from the `factory-virtual-fence-cpp` directory:
+There are several videos available to use as sample videos to show the capabilities of this application. You can download them by running these commands from the `restricted-zone-notifier-cpp` directory:
 ```
     mkdir resources
     cd resources
@@ -127,7 +127,7 @@ There are several videos available to use as sample videos to show the capabilit
     cd ..
 ```
 
-To then execute the code using one of these sample videos, run the following commands from the `factory-virtual-fence-cpp` directory:
+To then execute the code using one of these sample videos, run the following commands from the `restricted-zone-notifier-cpp` directory:
 ```
     cd build
     ./monitor -m=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/person-detection-retail-0013/FP32/person-detection-retail-0013.bin -c=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/person-detection-retail-0013/FP32/person-detection-retail-0013.xml -i=../resources/face-demographics-walking-and-pause.mp4
