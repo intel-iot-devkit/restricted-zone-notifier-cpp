@@ -92,19 +92,21 @@ Once the commands are finished, you should have built the `monitor` application 
 
 To see a list of the various options:
 ```
-    ./monitor -h
+    ./monitor -help
 ```
 
-To run the application with the needed models using the webcam:
+To run the application with the needed model using the webcam:
 ```
     ./monitor -m=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.bin -c=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.xml
 ```
 
+You can select an area to be used as the "off-limits" area by pressing the `c` key once the program is running. A new window will open showing a still image from the video capture device. Drag the mouse from left top corner to cover an area on the plane and once done (a blue recatngle is drawn) present `ENTER` or `SPACE` to proceed with monitoring.
+
+Once you have selected the "off-limits" area the coordinates will be displayed in the terminal window. You can run the application using those coordinates by using the `-x`, `-y`, `-h`, and `-w` flags to preselect that area.
+
 ### Hardware acceleration
 
 This application can take advantage of the hardware acceleration in the OpenVINO toolkit by using the `-b` and `-t` parameters.
-
-**NOTE:** You will be prompted to select an area when the camera capture start: drage a mouse from left top corner to cover an area on the plane and once done (a blue recatngle is drawn) present `ENTER` or `SPACE` to proceed with monitoring.
 
 For example, to use the OpenVINO™ toolkit backend with the GPU in 32-bit mode:
 ```
