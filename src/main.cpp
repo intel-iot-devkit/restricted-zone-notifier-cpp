@@ -381,14 +381,19 @@ int main(int argc, char** argv)
             area.height = frame.rows;
         }
 
-        // ESC key pressed
-        if ((char)waitKey(delay) == 27) {
+        int keyPressed = waitKey(delay);
+        // 'c' key pressed
+        if (keyPressed == 99) {
             // Give operator chance to change the area
             // select rectangle from left upper corner, dont display crosshair
             namedWindow(selector);
             area = selectROI(selector, frame, true, false);
             cout << "Assembly Area Selection: " << area << endl;
             destroyWindow(selector);
+        } else if (keyPressed == 27) {
+            cout << "Attempting to stop background threads" << endl;
+            keepRunning = false;
+            break;
         }
 
         // draw area rectangle
