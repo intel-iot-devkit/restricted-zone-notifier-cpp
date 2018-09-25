@@ -6,7 +6,7 @@
 | Programming Language: |  C++\* |
 | Time to Complete:    |  45 min     |
 
-![app image](./images/machine-safety-monitor.png)
+![app image](./images/restricted-zone-notifier.png)
 
 ## Introduction
 
@@ -104,6 +104,8 @@ You can select an area to be used as the "off-limits" area by pressing the `c` k
 
 Once you have selected the "off-limits" area the coordinates will be displayed in the terminal window. You can run the application using those coordinates by using the `-x`, `-y`, `-h`, and `-w` flags to preselect that area.
 
+If you do not select or specify an area, the default is to use the entire window as off limits.
+
 ### Hardware acceleration
 
 This application can take advantage of the hardware acceleration in the OpenVINO toolkit by using the `-b` and `-t` parameters.
@@ -115,7 +117,7 @@ For example, to use the OpenVINO™ toolkit backend with the GPU in 32-bit mode:
 
 To run the code using 16-bit floats, you have to both set the `-t` flag to use the GPU in 16-bit mode, as well as use the FP16 version of the Intel® models:
 ```
-    ./monitor -m=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.bin -c=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.xml -b=2 -t=2
+    ./monitor -m=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/pedestrian-detection-adas-0002/FP16/pedestrian-detection-adas-0002.bin -c=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/pedestrian-detection-adas-0002/FP16/pedestrian-detection-adas-0002.xml -b=2 -t=2
 ```
 
 ## Sample videos
@@ -147,5 +149,5 @@ Change the `MQTT_SERVER` to a value that matches the MQTT server you are connect
 
 You should change the `MQTT_CLIENT_ID` to a unique value for each monitoring station, so you can track the data for individual locations. For example:
 ```
-    export MQTT_CLIENT_ID=factory1337
+    export MQTT_CLIENT_ID=zone1337
 ```
