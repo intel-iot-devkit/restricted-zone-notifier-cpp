@@ -60,7 +60,7 @@ int backendId;
 int targetId;
 int rate;
 
-// applicationd related flags
+// application related flags
 const string selector = "Assembly Selection";
 // selected assembly line area
 Rect area;
@@ -72,7 +72,7 @@ atomic<bool> keepRunning(true);
 static volatile sig_atomic_t sig_caught = 0;
 
 // mqtt parameters
-const string topic = "machine/fence";
+const string topic = "machine/zone";
 
 // AssemblyInfo contains information about assembly line
 struct AssemblyInfo
@@ -388,7 +388,7 @@ int main(int argc, char** argv)
             // select rectangle from left upper corner, dont display crosshair
             namedWindow(selector);
             area = selectROI(selector, frame, true, false);
-            cout << "Assembly Area Selection: " << area << endl;
+            cout << "Assembly Area Selection: -x=" << area.x << " -y=" << area.y << " -h=" << area.height << " -w=" << area.width << endl;
             destroyWindow(selector);
         } else if (keyPressed == 27) {
             cout << "Attempting to stop background threads" << endl;
@@ -414,7 +414,7 @@ int main(int argc, char** argv)
             putText(frame, warning, Point(0, 120), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 2);
         }
 
-        imshow("Factory Virtual Fence", frame);
+        imshow("Restricted Zone Notifier", frame);
 
         if (sig_caught) {
             cout << "Attempting to stop background threads" << endl;
