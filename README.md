@@ -102,9 +102,19 @@ To run the application with the needed model using the webcam:
 
 You can select an area to be used as the "off-limits" area by pressing the `c` key once the program is running. A new window will open showing a still image from the video capture device. Drag the mouse from left top corner to cover an area on the plane and once done (a blue recatngle is drawn) present `ENTER` or `SPACE` to proceed with monitoring.
 
-Once you have selected the "off-limits" area the coordinates will be displayed in the terminal window. You can run the application using those coordinates by using the `-x`, `-y`, `-h`, and `-w` flags to preselect that area.
+Once you have selected the "off-limits" area the coordinates will be displayed in the terminal window like this:
+```
+Assembly Area Selection: -x=429 -y=101 -h=619 -w=690
+```
 
-If you do not select or specify an area, the default is to use the entire window as off limits.
+You can run the application using those coordinates by using the `-x`, `-y`, `-h`, and `-w` flags to preselect that area.
+
+For example:
+```
+    ./monitor -m=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.bin -c=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.xml -x=429 -y=101 -h=619 -w=690
+```
+
+If you do not select or specify an area, the default is to use the entire window as the off limits area.
 
 ### Hardware acceleration
 
@@ -134,7 +144,7 @@ There are several videos available to use as sample videos to show the capabilit
 To then execute the code using one of these sample videos, run the following commands from the `restricted-zone-notifier-cpp` directory:
 ```
     cd build
-    ./monitor -m=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/person-detection-retail-0013/FP32/person-detection-retail-0013.bin -c=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/person-detection-retail-0013/FP32/person-detection-retail-0013.xml -i=../resources/face-demographics-walking-and-pause.mp4
+    ./monitor -m=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.bin -c=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.xml -i=../resources/face-demographics-walking-and-pause.mp4
 ```
 
 ### Machine to machine messaging with MQTT
@@ -150,4 +160,9 @@ Change the `MQTT_SERVER` to a value that matches the MQTT server you are connect
 You should change the `MQTT_CLIENT_ID` to a unique value for each monitoring station, so you can track the data for individual locations. For example:
 ```
     export MQTT_CLIENT_ID=zone1337
+```
+
+If you want to monitor the MQTT messages sent to your local server, and you have the `mosquitto` client utilities installed, you can run the following command:
+```
+mosquitto_sub -t 'machine/zone'
 ```
