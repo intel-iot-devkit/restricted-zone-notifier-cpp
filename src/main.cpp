@@ -405,11 +405,11 @@ int main(int argc, char** argv)
         addImage(frame);
 
         string label = getCurrentPerf();
-        putText(frame, label, Point(0, 15), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(0, 0, 255));
+        putText(frame, label, Point(0, 15), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 255, 255));
 
         AssemblyInfo info = getCurrentInfo();
         label = format("Worker Safe: %s", info.safe ? "true" : "false");
-        putText(frame, label, Point(0, 40), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(0, 255, 0));
+        putText(frame, label, Point(0, 40), FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 255, 255));
 
         if (info.alert) {
             string warning;
