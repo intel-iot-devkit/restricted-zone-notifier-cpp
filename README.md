@@ -136,15 +136,14 @@ There are several videos available to use as sample videos to show the capabilit
 ```
     mkdir resources
     cd resources
-    wget https://github.com/intel-iot-devkit/sample-videos/raw/master/face-demographics-walking-and-pause.mp4
-    wget https://github.com/intel-iot-devkit/sample-videos/raw/master/face-demographics-walking.mp4
+    wget https://github.com/intel-iot-devkit/sample-videos/raw/master/worker-zone-detection.mp4
     cd ..
 ```
 
 To then execute the code using one of these sample videos, run the following commands from the `restricted-zone-notifier-cpp` directory:
 ```
     cd build
-    ./monitor -m=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.bin -c=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.xml -i=../resources/face-demographics-walking-and-pause.mp4
+    ./monitor -m=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.bin -c=/opt/intel/computer_vision_sdk/deployment_tools/intel_models/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.xml -i=../resources/worker-zone-detection.mp4
 ```
 
 ### Machine to Machine Messaging with MQTT
