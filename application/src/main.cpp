@@ -32,6 +32,7 @@
 #include <ctime>
 #include <mutex>
 #include <syslog.h>
+#include <fstream>
 
 // OpenCV includes
 #include <opencv2/core.hpp>
@@ -39,6 +40,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/dnn.hpp>
+#include <nlohmann/json.hpp>
 
 // MQTT
 #include "mqtt.h"
@@ -46,6 +48,8 @@
 using namespace std;
 using namespace cv;
 using namespace dnn;
+using json = nlohmann::json;
+json jsonobj;
 
 // OpenCV-related variables
 Mat frame, blob, im_info;
@@ -299,6 +303,12 @@ void handle_sigterm(int signum)
 
 int main(int argc, char** argv)
 {
+    string conf_file = "../resources/config.json", input;
+    std::ifstream confFile(conf_file);
+    confFile>>jsonobj;
+    auto obj = jsonobj["inputs"];
+    input = obj[0]["video"];
+
     // parse command parameters
     CommandLineParser parser(argc, argv, keys);
     parser.about("Use this script to using OpenVINO.");
@@ -337,16 +347,10 @@ int main(int argc, char** argv)
     net.setPreferableTarget(targetId);
 
     // open video capture source
-    if (parser.has("input")) {
-        cap.open(parser.get<String>("input"));
-
-        // also adjust delay so video playback matches the number of FPS in the file
-        double fps = cap.get(CAP_PROP_FPS);
-        delay = 1000/fps;
-    }
+    if (input.size() == 1 && *(input.c_str()) >= '0' && *(input.c_str()) <= '9')
+        cap.open(std::stoi(input));
     else
-        cap.open(parser.get<int>("device"));
-
+        cap.open(input);
     if (!cap.isOpened()) {
         cerr << "ERROR! Unable to open video source\n";
         return -1;
@@ -434,6 +438,7 @@ int main(int argc, char** argv)
     // disconnect MQTT messaging
     mqtt_disconnect();
     mqtt_close();
-
+    
+    net.~Net();
     return 0;
 }

@@ -6,13 +6,10 @@
 | Programming Language: |  C++ |
 | Time to Complete:    |  45 min     |
 
-![app image](./images/restricted-zone-notifier.png)
+![app image](./docs/images/restricted-zone-notifier.png)
 
-## Introduction
-
-This restricted zone notifier application is one of a series of reference implementations for Computer Vision (CV) using the Intel® Distribution of OpenVINO™ toolkit. This application is designed for a machine mounted camera system that monitors if there are any humans present in a predefined selected assembly line area. It sends an alert if there is at least one person detected in the marked assembly area. The user can select the area coordinates either via command line parameters or once the application has been started they can select the region of interest (ROI) by pressing the `c` key; this will pause the application, and pop up a separate window on which the user can drag the mouse from the upper left ROI corner to whatever the size they require the area to cover. By default, the whole frame is selected.
-
-This example is intended to demonstrate how to use CV to improve assembly line safety for human operators and factory workers.
+## What it does
+This application is designed to detect the humans present in a predefined selected assembly line area. If the people enters the marked assembly area, it raises the alert and sends through mqtt. It is intended to demonstrate how to use CV to improve assembly line safety for human operators and factory workers.
 
 ## Requirements
 
@@ -26,15 +23,7 @@ This example is intended to demonstrate how to use CV to improve assembly line s
     uname -a
     ```
 * OpenCL™ Runtime Package
-* Intel® Distribution of OpenVINO™ toolkit 2019 R1 Release
-
-## Setup
-
-### Install the Intel® Distribution of OpenVINO™ toolkit
-Refer to https://software.intel.com/en-us/articles/OpenVINO-Install-Linux for more information about how to install and setup the Intel® Distribution of OpenVINO™ toolkit.
-
-You will need the OpenCL™ Runtime package if you plan to run inference on the GPU as shown by the
-instructions below. It is not mandatory for CPU inference.
+* Intel® Distribution of OpenVINO™ toolkit 2019 R2 Release
 
 ## How it Works
 
@@ -42,10 +31,7 @@ The application uses a video source, such as a camera, to grab frames, and then 
 
 The data can then optionally be sent to a MQTT machine to machine messaging server, as part of an industrial data analytics system.
 
-The DNN models can be downloaded using `downloader.py` which is the part of the Intel® Distribution of OpenVINO™ toolkit.
-
-
-![Code organization](./images/arch3.png)
+![Code organization](./docs/images/arch3.png)
 
 The program creates three threads for concurrency:
 
@@ -53,56 +39,124 @@ The program creates three threads for concurrency:
 - Worker thread that processes video frames using the deep neural networks
 - Worker thread that publishes any MQTT messages
 
-## Install the Dependencies
+## Setup
+### Get the code
+Clone the reference implementation
+```
+sudo apt-get update && sudo apt-get install git
+git clone https://github.com/intel-iot-devkit/restricted-zone-notifier-cpp.git
+```
+
+### Install OpenVINO
+
+Refer to [Install Intel® Distribution of OpenVINO™ toolkit for Linux*](https://software.intel.com/en-us/articles/OpenVINO-Install-Linux) to learn how to install and configure the toolkit.
+
+Install the OpenCL™ Runtime Package to run inference on the GPU, as shown in the instructions below. It is not mandatory for CPU inference.
+
+## Other dependencies
+**Mosquitto**<br>
+
+Mosquitto is an open source message broker that implements the MQTT protocol. The MQTT protocol provides a lightweight method of carrying out messaging using a publish/subscribe model. 
+
+
+## Which model to use
+
+This application uses the [pedestrian-detection-adas-0002](https://docs.openvinotoolkit.org/2019_R1/_pedestrian_detection_adas_0002_description_pedestrian_detection_adas_0002.html) Intel® model, that can be downloaded using the **model downloader**. The **model downloader** downloads the __.xml__ and __.bin__ files that will be used by the application.
+
+To download the models and install the dependencies of the application, run the below command in the `store-traffic-monitor-cpp` directory:
+```
+./setup.sh
+```
+
+### The Config File
+
+The _resources/config.json_ contains the path of video that will be used by the application as input.
+
+For example:
+   ```
+   {
+       "inputs": [
+          {
+              "video":"path_to_video/video1.mp4",
+          }
+       ]
+   }
+   ```
+
+The `path/to/video` is the path to an input video file.
+
+### Which Input Video to use
+
+The application works with any input video. Sample videos are provided [here](https://github.com/intel-iot-devkit/sample-videos/).
+
+For first-use, we recommend using the [worker-zone-detection](https://github.com/intel-iot-devkit/sample-videos/blob/master/worker-zone-detection.mp4) video.
+For example:
+   ```
+   {
+       "inputs": [
+          {
+              "video":"sample-videos/worker-zone-detection.mp4",
+          }
+       ]
+   }
+   ```
+If the user wants to use any other video, it can be used by providing the path in the config.json file.
+
+### Using the Camera Stream instead of video
+
+Replace `path/to/video` with the camera ID in the config.json file, where the ID is taken from the video device (the number X in /dev/videoX).
+
+On Ubuntu, to list all available video devices use the following command:
 
 ```
-sudo apt-get install mosquitto mosquitto-clients
+ls /dev/video*
 ```
-## Download the model
-This application uses the **pedestrian-detection-adas-0002** Intel® model, that can be downloaded using the model downloader. The model downloader downloads the .xml and .bin files that will be used by the application.
 
-Steps to download .xml and .bin files:
-- Go to the **model_downloader** directory using the following command:
-    ```
-    cd /opt/intel/openvino/deployment_tools/tools/model_downloader
-    ```
+For example, if the output of above command is __/dev/video0__, then config.json would be:
 
-- Specify which model to download with __--name__: 
+```
+  {
+     "inputs": [
+        {
+           "video":"0"
+        }
+     ]
+   }
+```
 
-    ```
-    sudo ./downloader.py --name pedestrian-detection-adas-0002
-    ```
-- To download the model for FP16, run the following command:
-    ```
-    sudo ./downloader.py --name pedestrian-detection-adas-0002-fp16
-    ```
-The files will be downloaded inside `/opt/intel/openvino/deployment_tools/tools/model_downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt` directory.
+### Setup the Environment
 
-## Setting the Build Environment
+Configure the environment to use the Intel® Distribution of OpenVINO™ toolkit by exporting environment variables:
 
-You must configure the environment to use the Intel® Distribution of OpenVINO™ toolkit one time per session by running the following command:
 ```
 source /opt/intel/openvino/bin/setupvars.sh
 ```
 
-## Building the Code
+__Note__: This command needs to be executed only once in the terminal where the application will be executed. If the terminal is closed, the command needs to be executed again.
 
-To build the code, run the following commands in `restricted-zone-notifier-cpp` directory on the terminal:
+### Build the Application
+
+To build , go to the `restricted-zone-notifier-cpp` and run the following commands:
 ```
 mkdir -p build && cd build
 cmake ..
 make
 ```
-## Running the Code
+## Run the Application
 
 To see a list of the various options:
 ```
 ./monitor -help
 ```
 
-To run the application with the needed model using the webcam:
+A user can specify what target device to run on by using the device command-line argument `-d`. If no target device is specified the application will run on the CPU by default.
+To run with multiple devices use _-d MULTI:device1,device2_. For example: _-d MULTI:CPU,GPU,MYRIAD_
+
+### Run on the CPU
+
+To run the application on CPU, use the following command:
 ```
-./monitor -m=/opt/intel/openvino/deployment_tools/tools/model_downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/tools/model_downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/pedestrian-detection-adas-0002.xml
+./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP32/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP32/pedestrian-detection-adas-0002.xml
 ```
 
 You can select an area to be used as the "off-limits" area by pressing the `c` key once the program is running. A new window will open showing a still image from the video capture device. Drag the mouse from left top corner to cover an area on the plane and once done (a blue rectangle is drawn) press `ENTER` or `SPACE` to proceed with monitoring.
@@ -116,29 +170,38 @@ You can run the application using those coordinates by using the `-x`, `-y`, `-h
 
 For example:
 ```
-./monitor -m=/opt/intel/openvino/deployment_tools/tools/model_downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/tools/model_downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/pedestrian-detection-adas-0002.xml -x=429 -y=101 -h=619 -w=690
+./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP32/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP32/pedestrian-detection-adas-0002.xml -x=429 -y=101 -h=619 -w=690
 ```
 
 If you do not select or specify an area, the default is to use the entire window as the off limits area.
 
-### Hardware Acceleration
+### Run on the Integrated GPU
 
 This application can take advantage of the hardware acceleration in the Intel® Distribution of OpenVINO™ toolkit by using the `-b` and `-t` parameters.
 
-For example, to use the Intel® Distribution of OpenVINO™ toolkit backend with the GPU in 32-bit mode:
+- To run on the GPU in 32-bit mode, use the following command:
+    ```
+    ./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP32/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP32/pedestrian-detection-adas-0002.xml -b=2 -t=1
+    ```
+
+    **FP32**: FP32 is single-precision floating-point arithmetic uses 32 bits to represent numbers. 8 bits for the magnitude and 23 bits for the precision. For more information, [click here](https://en.wikipedia.org/wiki/Single-precision_floating-point_format)<br>
+
+- To run on the GPU in 16-bit mode, use the following command:
+    ```
+    ./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP16/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP16/pedestrian-detection-adas-0002.xml -b=2 -t=2
+    ```
+
+    **FP16**: FP16 is half-precision floating-point arithmetic uses 16 bits. 5 bits for the magnitude and 10 bits for the precision. For more information, [click here](https://en.wikipedia.org/wiki/Half-precision_floating-point_format)<br>
+
+### Run on the Intel® Neural Compute Stick
+
+To run on the Intel® Neural Compute Stick, use the following command:
 ```
-./monitor -m=/opt/intel/openvino/deployment_tools/tools/model_downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/tools/model_downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/pedestrian-detection-adas-0002.xml -b=2 -t=1
+./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP16/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP16/pedestrian-detection-adas-0002.xml -b=2 -t=3
 ```
 
-To run the code using 16-bit floats, you have to both set the `-t` flag to use the GPU in 16-bit mode, as well as use the FP16 version of the Intel® models:
-```
-./monitor -m=/opt/intel/openvino/deployment_tools/tools/model_downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/pedestrian-detection-adas-0002-fp16.bin -c=/opt/intel/openvino/deployment_tools/tools/model_downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/pedestrian-detection-adas-0002-fp16.xml -b=2 -t=2
-```
-
-To run the code using the VPU, you have to set the `-t` flag to `3` and also use the 16-bit FP16 version of the Intel® models:
-```
-./monitor -m=/opt/intel/openvino/deployment_tools/tools/model_downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/pedestrian-detection-adas-0002-fp16.bin -c=/opt/intel/openvino/deployment_tools/tools/model_downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/pedestrian-detection-adas-0002-fp16.xml -b=2 -t=3
-```
+**Note:** The Intel® Neural Compute Stick can only run on FP16 models.
+<!--
 #### Run the application on FPGA:
 
 Before running the application on the FPGA, program the AOCX (bitstream) file.
@@ -157,24 +220,9 @@ For more information on programming the bitstreams, please refer to https://soft
 
 To run the code using the FPGA, you have to set the `-t` flag to `5`:
 ```
-./monitor -m=/opt/intel/openvino/deployment_tools/tools/model_downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/pedestrian-detection-adas-0002-fp16.bin -c=/opt/intel/openvino/deployment_tools/tools/model_downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/pedestrian-detection-adas-0002-fp16.xml -b=2 -t=5
+./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP16/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP16/pedestrian-detection-adas-0002.xml -b=2 -t=5
 ```
-
-## Sample Videos
-
-There are several videos available to use as sample videos to show the capabilities of this application. You can download them by running these commands from the `restricted-zone-notifier-cpp` directory:
-```
-mkdir resources
-cd resources
-wget https://github.com/intel-iot-devkit/sample-videos/raw/master/worker-zone-detection.mp4
-cd ..
-```
-
-To then execute the code using one of these sample videos, run the following commands from the `restricted-zone-notifier-cpp` directory:
-```
-cd build
-./monitor -m=/opt/intel/openvino/deployment_tools/tools/model_downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/tools/model_downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/pedestrian-detection-adas-0002.xml -i=../resources/worker-zone-detection.mp4
-```
+-->
 
 ### Machine to Machine Messaging with MQTT
 

@@ -33,7 +33,7 @@ set(Blue "${Esc}[1;34m")
 # Allow users to manually set OpenCV path if desired
 set(OpenCV_DIR CACHE PATH "Path to Intel OpenCV library")
 
-message(STATUS "${Blue}Intel Shopper Gaze Monitor${CR}")
+message(STATUS "${Blue}Intel Restricted Zone Notifier${CR}")
 
 # Check OS
 message(STATUS "${Blue}Checking OS version...${CR}")
@@ -51,13 +51,14 @@ if(NOT OpenCV_FOUND)
 endif( )
 
 include_directories(${OpenCV_INCLUDE_DIRS})
-
+include_directories(application/include)
+include_directories(json/single_include)
 # Install paho MQTT dependency
 include(pahomqtt)
 
 # Application executables
 set(MONITOR monitor)
-set(DSOURCES src/main.cpp src/mqtt.cpp)
+set(DSOURCES application/src/main.cpp application/src/mqtt.cpp)
 add_executable(${MONITOR} ${DSOURCES})
 add_dependencies(${MONITOR} pahomqtt)
 set_target_properties(${MONITOR} ${TRAINER} PROPERTIES COMPILE_FLAGS "-pthread -std=c++11")
