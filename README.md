@@ -23,7 +23,7 @@ This application is designed to detect the humans present in a predefined select
     uname -a
     ```
 * OpenCL™ Runtime Package
-* Intel® Distribution of OpenVINO™ toolkit 2019 R2 Release
+* Intel® Distribution of OpenVINO™ toolkit 2019 R3 Release
 
 ## How it Works
 
@@ -61,9 +61,9 @@ Mosquitto is an open source message broker that implements the MQTT protocol. Th
 
 ## Which model to use
 
-This application uses the [pedestrian-detection-adas-0002](https://docs.openvinotoolkit.org/2019_R1/_pedestrian_detection_adas_0002_description_pedestrian_detection_adas_0002.html) Intel® model, that can be downloaded using the **model downloader**. The **model downloader** downloads the __.xml__ and __.bin__ files that will be used by the application.
+This application uses the [pedestrian-detection-adas-0002](https://docs.openvinotoolkit.org/2019_R3/_models_intel_pedestrian_detection_adas_0002_description_pedestrian_detection_adas_0002.html) Intel® model, that can be downloaded using the **model downloader**. The **model downloader** downloads the __.xml__ and __.bin__ files that will be used by the application.
 
-To download the models and install the dependencies of the application, run the below command in the `store-traffic-monitor-cpp` directory:
+To download the models and install the dependencies of the application, run the below command in the `restricted-zone-notifier-cpp` directory:
 ```
 ./setup.sh
 ```
@@ -156,7 +156,7 @@ To run with multiple devices use _-d MULTI:device1,device2_. For example: _-d MU
 
 To run the application on CPU, use the following command:
 ```
-./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP32/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP32/pedestrian-detection-adas-0002.xml
+./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/intel/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/intel/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.xml
 ```
 
 You can select an area to be used as the "off-limits" area by pressing the `c` key once the program is running. A new window will open showing a still image from the video capture device. Drag the mouse from left top corner to cover an area on the plane and once done (a blue rectangle is drawn) press `ENTER` or `SPACE` to proceed with monitoring.
@@ -170,7 +170,7 @@ You can run the application using those coordinates by using the `-x`, `-y`, `-h
 
 For example:
 ```
-./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP32/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP32/pedestrian-detection-adas-0002.xml -x=429 -y=101 -h=619 -w=690
+./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/intel/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/intel/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.xml -x=429 -y=101 -h=619 -w=690
 ```
 
 If you do not select or specify an area, the default is to use the entire window as the off limits area.
@@ -181,14 +181,14 @@ This application can take advantage of the hardware acceleration in the Intel® 
 
 - To run on the GPU in 32-bit mode, use the following command:
     ```
-    ./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP32/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP32/pedestrian-detection-adas-0002.xml -b=2 -t=1
+    ./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/intel/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/intel/pedestrian-detection-adas-0002/FP32/pedestrian-detection-adas-0002.xml -b=2 -t=1
     ```
 
     **FP32**: FP32 is single-precision floating-point arithmetic uses 32 bits to represent numbers. 8 bits for the magnitude and 23 bits for the precision. For more information, [click here](https://en.wikipedia.org/wiki/Single-precision_floating-point_format)<br>
 
 - To run on the GPU in 16-bit mode, use the following command:
     ```
-    ./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP16/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP16/pedestrian-detection-adas-0002.xml -b=2 -t=2
+    ./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/intel/pedestrian-detection-adas-0002/FP16/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/intel/pedestrian-detection-adas-0002/FP16/pedestrian-detection-adas-0002.xml -b=2 -t=2
     ```
 
     **FP16**: FP16 is half-precision floating-point arithmetic uses 16 bits. 5 bits for the magnitude and 10 bits for the precision. For more information, [click here](https://en.wikipedia.org/wiki/Half-precision_floating-point_format)<br>
@@ -197,32 +197,8 @@ This application can take advantage of the hardware acceleration in the Intel® 
 
 To run on the Intel® Neural Compute Stick, use the following command:
 ```
-./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP16/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP16/pedestrian-detection-adas-0002.xml -b=2 -t=3
+./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/intel/pedestrian-detection-adas-0002/FP16/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/intel/pedestrian-detection-adas-0002/FP16/pedestrian-detection-adas-0002.xml -b=2 -t=3
 ```
-
-**Note:** The Intel® Neural Compute Stick can only run on FP16 models.
-<!--
-#### Run the application on FPGA:
-
-Before running the application on the FPGA, program the AOCX (bitstream) file.
-Use the setup_env.sh script from [fpga_support_files.tgz](http://registrationcenter-download.intel.com/akdlm/irc_nas/12954/fpga_support_files.tgz) to set the environment variables.<br>
-
-```
-source /home/<user>/Downloads/fpga_support_files/setup_env.sh
-```
-
-The bitstreams for HDDL-F can be found under the `/opt/intel/openvino/bitstreams/a10_vision_design_bitstreams` folder. To program the bitstream use the below command:
-```
-aocl program acl0 /opt/intel/openvino/bitstreams/a10_vision_design_bitstreams/2019R1_PL1_FP11_MobileNet_Clamp.aocx
-```
-
-For more information on programming the bitstreams, please refer to https://software.intel.com/en-us/articles/OpenVINO-Install-Linux-FPGA#inpage-nav-11.
-
-To run the code using the FPGA, you have to set the `-t` flag to `5`:
-```
-./monitor -m=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP16/pedestrian-detection-adas-0002.bin -c=/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/Transportation/object_detection/pedestrian/mobilenet-reduced-ssd/dldt/FP16/pedestrian-detection-adas-0002.xml -b=2 -t=5
-```
--->
 
 ### Machine to Machine Messaging with MQTT
 
