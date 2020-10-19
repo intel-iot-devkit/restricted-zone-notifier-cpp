@@ -2,7 +2,7 @@
 
 | Details            |              |
 |-----------------------|---------------|
-| Target OS:            |  Ubuntu\* 16.04 LTS   |
+| Target OS:            |  Ubuntu\* 18.04 LTS   |
 | Programming Language: |  C++ |
 | Time to Complete:    |  45 min     |
 
@@ -17,13 +17,13 @@ This application is designed to detect the humans present in a predefined select
 * 6th to 8th Generation Intel® Core™ processors with Intel® Iris® Pro graphics or Intel® HD Graphics
 
 ### Software
-* [Ubuntu\* 16.04 LTS](http://releases.ubuntu.com/16.04/)<br><br>
+* [Ubuntu\* 18.04 LTS](http://releases.ubuntu.com/18.04/)<br><br>
 **Note**: We recommend using a 4.14+ kernel to use this software. Run the following command to determine your kernel version:
     ```
     uname -a
     ```
 * OpenCL™ Runtime Package
-* Intel® Distribution of OpenVINO™ toolkit 2019 R3 Release
+* Intel® Distribution of OpenVINO™ toolkit 2020 R3 Release
 
 ## How it Works
 
@@ -44,7 +44,7 @@ The program creates three threads for concurrency:
 Clone the reference implementation
 ```
 sudo apt-get update && sudo apt-get install git
-git clone https://github.com/intel-iot-devkit/restricted-zone-notifier-cpp.git
+git clone https://github.com/intel-iot-devkit/restricted-zone-notifier-cpp.git 
 ```
 
 ### Install OpenVINO
@@ -61,7 +61,7 @@ Mosquitto is an open source message broker that implements the MQTT protocol. Th
 
 ## Which model to use
 
-This application uses the [pedestrian-detection-adas-0002](https://docs.openvinotoolkit.org/2019_R3/_models_intel_pedestrian_detection_adas_0002_description_pedestrian_detection_adas_0002.html) Intel® model, that can be downloaded using the **model downloader**. The **model downloader** downloads the __.xml__ and __.bin__ files that will be used by the application.
+This application uses the [pedestrian-detection-adas-0002](https://docs.openvinotoolkit.org/2020.3/_models_intel_pedestrian_detection_adas_0002_description_pedestrian_detection_adas_0002.html) Intel® model, that can be downloaded using the **model downloader**. The **model downloader** downloads the __.xml__ and __.bin__ files that will be used by the application.
 
 To download the models and install the dependencies of the application, run the below command in the `restricted-zone-notifier-cpp` directory:
 ```
@@ -192,6 +192,8 @@ This application can take advantage of the hardware acceleration in the Intel® 
     ```
 
     **FP16**: FP16 is half-precision floating-point arithmetic uses 16 bits. 5 bits for the magnitude and 10 bits for the precision. For more information, [click here](https://en.wikipedia.org/wiki/Half-precision_floating-point_format)<br>
+
+**Note:** The Model Loading Time for GPU is quite slow. So to observe the inference for GPU, please try to use longer duration videos.
 
 ### Run on the Intel® Neural Compute Stick
 

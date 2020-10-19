@@ -1,5 +1,5 @@
 : '
-* Copyright (c) 2018 Intel Corporation.
+* Copyright (c) 2020 Intel Corporation.
 *
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
@@ -23,6 +23,7 @@
 
 sudo apt-get update
 sudo apt-get install mosquitto mosquitto-clients    # install mosquitto
+sudo apt-get install libssl-dev
 BASEDIR=$(pwd)
 
 if [ -d "json" ]

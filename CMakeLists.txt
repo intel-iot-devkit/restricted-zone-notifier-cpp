@@ -1,4 +1,4 @@
-# Copyright (c) 2018 Intel Corporation.
+# Copyright (c) 2020 Intel Corporation.
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -39,7 +39,7 @@ message(STATUS "${Blue}Intel Restricted Zone Notifier${CR}")
 message(STATUS "${Blue}Checking OS version...${CR}")
 
 set(REQUIRED_OS_ID "Ubuntu")
-set(REQUIRED_OS_VERSION "16.04")
+set(REQUIRED_OS_VERSION "18.04")
 include(osdetect)
 
 # Check for Intel OpenVINO
